@@ -28,9 +28,6 @@ namespace WebApplication1
 
         protected void Button2_Click(object sender, EventArgs e) //儲存
         {
-            //List<Person> people = new List<Person>();
-            //people.Add(new Person { name = TextBox1.Text, tell = TextBox2.Text, address = TextBox3.Text });
-
             SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\TPE-Intern001\Desktop\WebApplication1\WebApplication1\App_Data\Database1.mdf;Integrated Security=True");
             conn.Open();    //開啟資料庫連線
                             //建立SqlCommand查詢命令
@@ -47,8 +44,6 @@ namespace WebApplication1
             cmd.Dispose();
             conn.Close();
             conn.Dispose();
-
-            
         }
 
         protected void Button3_Click(object sender, EventArgs e) //刪除
@@ -261,7 +256,7 @@ namespace WebApplication1
 
                     //抓取MYSHEET工作表中的標題欄位，並存入DATATABLE
                     XSSFRow headerRow = mySheet.GetRow(0) as XSSFRow;
-                    for (int i = headerRow.FirstCellNum; i < headerRow.LastCellNum; i++)
+                    for (int i = headerRow.FirstCellNum; i < headerRow.LastCellNum-1; i++)
                     {
                         if (headerRow.GetCell(i) != null)
                         {
@@ -272,11 +267,11 @@ namespace WebApplication1
                     }
 
                     //抓取XSSFSHEET第一列以後的所有資料，並存入DATATABLE中
-                    for (int i = mySheet.FirstRowNum + 1; i < mySheet.LastRowNum; i++)
+                    for (int i = mySheet.FirstRowNum + 1; i <= mySheet.LastRowNum; i++)
                     {
                         XSSFRow row = mySheet.GetRow(i) as XSSFRow;
                         DataRow myRow = myDT.NewRow();
-                        for (int j = row.FirstCellNum; j < row.LastCellNum; j++)
+                        for (int j = row.FirstCellNum; j < row.LastCellNum-1; j++)
                         {
                             if (row.GetCell(j) != null)
                             {

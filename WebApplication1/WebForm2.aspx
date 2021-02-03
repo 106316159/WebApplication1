@@ -45,12 +45,7 @@
                     <asp:BoundField DataField="name" HeaderText="name" SortExpression="name" />
                     <asp:BoundField DataField="tellphone" HeaderText="tellphone" SortExpression="tellphone" />
                     <asp:BoundField DataField="address" HeaderText="address" SortExpression="address" />
-                    <asp:TemplateField ShowHeader="False">
-                        <ItemTemplate>
-                            <asp:Button ID="Button1" runat="server" CausesValidation="false" CommandName="Update" Text="修改" />
-                        </ItemTemplate>
-                    </asp:TemplateField>
-                    <asp:ButtonField ButtonType="Button" CommandName="Delete" Text="刪除" />
+                    <asp:CommandField ButtonType="Button" ShowDeleteButton="True" ShowEditButton="True" />
                 </Columns>
             </asp:GridView>
             <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionString %>" SelectCommand="SELECT * FROM [People]" DeleteCommand="DELETE FROM [People] WHERE [DId] = @DId" InsertCommand="INSERT INTO [People] ([name], [tellphone], [address]) VALUES (@name, @tellphone, @address)" UpdateCommand="UPDATE [People] SET [name] = @name, [tellphone] = @tellphone, [address] = @address WHERE [DId] = @DId">

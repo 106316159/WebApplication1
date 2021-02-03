@@ -37,7 +37,7 @@
             <asp:Label ID="Label8" runat="server" ForeColor="Red"></asp:Label>
             <br />
             <br />
-            <asp:Label ID="Label10" runat="server" Text="資料庫裡的資料: "></asp:Label>
+            <asp:Label ID="Label10" runat="server" Text="資料: "></asp:Label>
             <br />
             <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" DataKeyNames="DId" DataSourceID="SqlDataSource1" style="text-align: center">
                 <Columns>
@@ -45,7 +45,16 @@
                     <asp:BoundField DataField="name" HeaderText="name" SortExpression="name" />
                     <asp:BoundField DataField="tellphone" HeaderText="tellphone" SortExpression="tellphone" />
                     <asp:BoundField DataField="address" HeaderText="address" SortExpression="address" />
-                    <asp:CommandField ButtonType="Button" ShowDeleteButton="True" ShowEditButton="True" />
+                    <asp:TemplateField ShowHeader="False">
+                        <EditItemTemplate>
+                            <asp:Button ID="Button1" runat="server" CausesValidation="True" CommandName="Update" Text="更新" />
+                            &nbsp;<asp:Button ID="Button2" runat="server" CausesValidation="False" CommandName="Cancel" Text="取消" />
+                        </EditItemTemplate>
+                        <ItemTemplate>
+                            <asp:Button ID="Button1" runat="server" CausesValidation="False" CommandName="Edit" OnClick="Button1_Click1" Text="編輯" />
+                            &nbsp;<asp:Button ID="Button2" runat="server" CausesValidation="False" CommandName="Delete" Text="刪除" />
+                        </ItemTemplate>
+                    </asp:TemplateField>
                 </Columns>
             </asp:GridView>
             <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionString %>" SelectCommand="SELECT * FROM [People]" DeleteCommand="DELETE FROM [People] WHERE [DId] = @DId" InsertCommand="INSERT INTO [People] ([name], [tellphone], [address]) VALUES (@name, @tellphone, @address)" UpdateCommand="UPDATE [People] SET [name] = @name, [tellphone] = @tellphone, [address] = @address WHERE [DId] = @DId">

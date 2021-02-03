@@ -41,6 +41,10 @@ namespace WebApplication1
             Label6.Text = "新增成功！";
             GridView1.DataBind();
 
+            TextBox1.Text = "";
+            TextBox2.Text = "";
+            TextBox3.Text = "";
+
             cmd.Dispose();
             conn.Close();
             conn.Dispose();
@@ -300,6 +304,10 @@ namespace WebApplication1
                 Label9.Text = "請先挑選檔案之後";
             }
         }
-        
+
+        protected void Button1_Click1(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

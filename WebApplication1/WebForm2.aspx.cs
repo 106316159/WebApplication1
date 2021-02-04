@@ -11,8 +11,13 @@ namespace WebApplication1
 {
     public partial class WebForm2 : System.Web.UI.Page
     {
+        int select_id = 0;
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            //Button5.Visible = false;
+            Button8.Visible = false;
+
             if (Session["id"] != null)
                 Label2.Text = (string)Session["id"];
             else
@@ -28,26 +33,37 @@ namespace WebApplication1
 
         protected void Button2_Click(object sender, EventArgs e) //儲存
         {
-            SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\TPE-Intern001\Desktop\WebApplication1\WebApplication1\App_Data\Database1.mdf;Integrated Security=True");
-            conn.Open();    //開啟資料庫連線
-                            //建立SqlCommand查詢命令
-            SqlCommand cmd = new SqlCommand(@"Insert Into [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People](name,tellphone,address) Values(@n,@tell,@addr)", conn);
-            //cmd.Parameters.Add("@id", SqlDbType.NChar, 10).Value = Label2.Text;
-            cmd.Parameters.Add("@n", SqlDbType.NChar, 10).Value = TextBox1.Text;
-            cmd.Parameters.Add("@tell", SqlDbType.Int, 4).Value = Int32.Parse(TextBox2.Text);
-            cmd.Parameters.Add("@addr", SqlDbType.NVarChar, 50).Value = TextBox3.Text;
-            cmd.ExecuteNonQuery();
-            //釋放物件及連線資源
-            Label6.Text = "新增成功！";
-            GridView1.DataBind();
+            if (TextBox1.Text == "" || TextBox2.Text == "" || TextBox3.Text == "")
+            {
+                Label6.Text = "請輸入資料";
+            }
+            else
+            {
+                SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\TPE-Intern001\Desktop\WebApplication1\WebApplication1\App_Data\Database1.mdf;Integrated Security=True");
+                conn.Open();    //開啟資料庫連線
+                                //建立SqlCommand查詢命令
+                SqlCommand cmd = new SqlCommand(@"Insert Into [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People](name,tellphone,address) Values(@n,@tell,@addr)", conn);
+                //cmd.Parameters.Add("@id", SqlDbType.NChar, 10).Value = Label2.Text;
+                cmd.Parameters.Add("@n", SqlDbType.NChar, 10).Value = TextBox1.Text;
+                cmd.Parameters.Add("@tell", SqlDbType.Int, 4).Value = Int32.Parse(TextBox2.Text);
+                cmd.Parameters.Add("@addr", SqlDbType.NVarChar, 50).Value = TextBox3.Text;
+                cmd.ExecuteNonQuery();
+                //釋放物件及連線資源
+                Label6.Text = "新增成功！";
+                GridView1.DataBind();
 
-            TextBox1.Text = "";
-            TextBox2.Text = "";
-            TextBox3.Text = "";
+                TextBox1.Text = "";
+                TextBox2.Text = "";
+                TextBox3.Text = "";
 
-            cmd.Dispose();
-            conn.Close();
-            conn.Dispose();
+                cmd.Dispose();
+                conn.Close();
+                conn.Dispose();
+
+                Button5.Visible = true;
+                Button8.Visible = true;
+            }
+            
         }
 
         protected void Button3_Click(object sender, EventArgs e) //刪除
@@ -59,7 +75,7 @@ namespace WebApplication1
             //於SqlCommand中加入SqlParameter參數，並設定參數值
             cmd1.Parameters.Add("@a", SqlDbType.NVarChar, 10).Value = TextBox4.Text;
             SqlDataReader dr1 = cmd1.ExecuteReader();
-
+            
             if (dr1.HasRows)
             {
                 dr1.Dispose();
@@ -231,12 +247,12 @@ namespace WebApplication1
             { }
         }
 
-        protected void Button6_Click(object sender, EventArgs e)
+        protected void Button6_Click(object sender, EventArgs e) //呼叫(匯出Excel)
         {
             ExportToFile(GridView1, "AAA");
         }
 
-        protected void Button7_Click(object sender, EventArgs e)
+        protected void Button7_Click(object sender, EventArgs e) //匯入
         {
 
             //string savePath = @"C:\Users\TPE-Intern001\Desktop\20210202.xls";
@@ -260,7 +276,7 @@ namespace WebApplication1
 
                     //抓取MYSHEET工作表中的標題欄位，並存入DATATABLE
                     XSSFRow headerRow = mySheet.GetRow(0) as XSSFRow;
-                    for (int i = headerRow.FirstCellNum; i < headerRow.LastCellNum-1; i++)
+                    for (int i = headerRow.FirstCellNum; i < headerRow.LastCellNum -2; i++)
                     {
                         if (headerRow.GetCell(i) != null)
                         {
@@ -275,7 +291,7 @@ namespace WebApplication1
                     {
                         XSSFRow row = mySheet.GetRow(i) as XSSFRow;
                         DataRow myRow = myDT.NewRow();
-                        for (int j = row.FirstCellNum; j < row.LastCellNum-1; j++)
+                        for (int j = row.FirstCellNum; j < row.LastCellNum -2; j++)
                         {
                             if (row.GetCell(j) != null)
                             {
@@ -308,6 +324,46 @@ namespace WebApplication1
         protected void Button1_Click1(object sender, EventArgs e)
         {
             
+        }
+        
+        protected void GridView1_SelectedIndexChanged(object sender, EventArgs e) //GV選取
+        {
+            Button2.Visible = false;
+            Label6.Text = "";
+            Button5.Visible = true;
+            Button8.Visible = true;
+
+            select_id = Int32.Parse(GridView1.SelectedRow.Cells[0].Text); 
+            //Response.Write(id);
+            TextBox1.Text = GridView1.SelectedRow.Cells[1].Text;
+            TextBox2.Text = GridView1.SelectedRow.Cells[2].Text;
+            TextBox3.Text = GridView1.SelectedRow.Cells[3].Text;
+        }
+
+        protected void Button8_Click(object sender, EventArgs e) //GV修改
+        {
+            SqlConnection conn1 = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\TPE-Intern001\Desktop\WebApplication1\WebApplication1\App_Data\Database1.mdf;Integrated Security=True");
+            //建立Select帶參數語法
+            conn1.Open();
+            SqlCommand cmd1 = new SqlCommand(@"Update [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People] Set name=@na,tellphone=@tell,address=@addr  Where name=@na", conn1);
+            cmd1.Parameters.Add("@na", SqlDbType.NChar, 10).Value = TextBox1.Text;
+            cmd1.Parameters.Add("@tell", SqlDbType.Int, 4).Value = TextBox2.Text;
+            cmd1.Parameters.Add("@addr", SqlDbType.NVarChar, 50).Value = TextBox3.Text;
+            cmd1.ExecuteNonQuery();
+            GridView1.DataBind();
+            Label6.Text = "修改成功";
+
+            cmd1.Dispose();
+            conn1.Close();
+            conn1.Dispose();
+
+            select_id = 0;
+            Button2.Visible = true;
+            Button5.Visible = true;
+            Button8.Visible = true;
+            TextBox1.Text = "";
+            TextBox2.Text = "";
+            TextBox3.Text = "";
         }
     }
 }

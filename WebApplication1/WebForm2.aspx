@@ -11,7 +11,7 @@
     <form id="form1" runat="server">
         <h2 style="text-align: center">WELCOME!!!   <asp:Label ID="Label2" runat="server" Text="Label"></asp:Label></h2>
         <div align="center">
-            <b font-weight:bold;>新增</b>
+            <b font-weight:bold;>~新增~</b>
             <table style="border:3px #808080 solid" cellpadding="10" border="0" align="center">
             <tbody>
             <tr><td class="auto-style2">姓名:</td>
@@ -32,38 +32,38 @@
             <br />
             <br />
             <br />
-            <b font-weight:bold;>刪除</b>
+            <b font-weight:bold;>~刪除~</b>
             <table style="border:3px #808080 solid" cellpadding="10" border="0" align="center">
             <tbody>
             <tr><td class="auto-style2">姓名: </td>
-                <td class="auto-style2"><asp:TextBox ID="TextBox4" runat="server"></asp:TextBox></asp:TextBox></td></tr>
+                <td class="auto-style2"><asp:TextBox ID="TextBox4" runat="server"></asp:TextBox></td></tr>
             </tbody>
             </table>
 
             <br />
-            <asp:Button ID="Button3" runat="server" OnClick="Button3_Click" Text="刪除" />
+            <asp:Button ID="Button3" runat="server" OnClick="Button3_Click" Text="刪除" OnClientClick="return confirm('確定刪除?')" />
             <asp:Label ID="Label8" runat="server" ForeColor="Red"></asp:Label>
             <br />
             <br />
-            <b font-weight:bold;>資料</b>
+            <b font-weight:bold;>~資料~</b>
             <br />
-            <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" DataKeyNames="DId" DataSourceID="SqlDataSource1" style="text-align: center" OnSelectedIndexChanged="GridView1_SelectedIndexChanged" align="center">
+            <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" DataKeyNames="DId" DataSourceID="SqlDataSource1" style="text-align: center" OnSelectedIndexChanged="GridView1_SelectedIndexChanged" align="center" 
+                onrowdeleting="GridView1_RowDeleting" 
+                onrowediting="GridView1_RowEditing" 
+                onrowupdating="GridView1_RowUpdating" 
+                onrowcancelingedit="GridView1_RowCancelingEdit"
+                >
                 <Columns>
                     <asp:BoundField DataField="DId" HeaderText="DId" ReadOnly="True" SortExpression="DId" InsertVisible="False" />
                     <asp:BoundField DataField="name" HeaderText="name" SortExpression="name" />
                     <asp:BoundField DataField="tellphone" HeaderText="tellphone" SortExpression="tellphone" />
                     <asp:BoundField DataField="address" HeaderText="address" SortExpression="address" />
+                    <asp:CommandField ButtonType="Button" ShowSelectButton="True" ShowEditButton="True" />
                     <asp:TemplateField ShowHeader="False">
-                        <EditItemTemplate>
-                            <asp:Button ID="Button1" runat="server" CausesValidation="True" CommandName="Update" Text="更新" />
-                            &nbsp;<asp:Button ID="Button2" runat="server" CausesValidation="False" CommandName="Cancel" Text="取消" />
-                        </EditItemTemplate>
                         <ItemTemplate>
-                            <asp:Button ID="Button1" runat="server" CausesValidation="False" CommandName="Edit" OnClick="Button1_Click1" Text="編輯" />
-                            &nbsp;<asp:Button ID="Button2" runat="server" CausesValidation="False" CommandName="Delete" Text="刪除" />
+                            <asp:Button ID="Button1" runat="server" CausesValidation="false" CommandName="Delete" Text="刪除" OnClientClick='return confirm("確定刪除？")' />
                         </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:CommandField ButtonType="Button" ShowSelectButton="True" />
                 </Columns>
             </asp:GridView>
             <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionString %>" SelectCommand="SELECT * FROM [People]" DeleteCommand="DELETE FROM [People] WHERE [DId] = @DId" InsertCommand="INSERT INTO [People] ([name], [tellphone], [address]) VALUES (@name, @tellphone, @address)" UpdateCommand="UPDATE [People] SET [name] = @name, [tellphone] = @tellphone, [address] = @address WHERE [DId] = @DId">

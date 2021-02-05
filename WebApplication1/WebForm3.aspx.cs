@@ -66,7 +66,7 @@ namespace WebApplication1
             conn1.Close();
             conn1.Dispose();
 
-            Response.Redirect("WebForm2.aspx", true);
+            //Response.Redirect("WebForm2.aspx", true);
         }
 
         protected void Button3_Click(object sender, EventArgs e)

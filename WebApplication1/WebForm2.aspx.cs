@@ -11,19 +11,25 @@ namespace WebApplication1
 {
     public partial class WebForm2 : System.Web.UI.Page
     {
-        int select_id = 0;
-
+        string select_id = "";
+        string Strcon = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\TPE-Intern001\Desktop\WebApplication1\WebApplication1\App_Data\Database1.mdf;Integrated Security=True";
         protected void Page_Load(object sender, EventArgs e)
         {
-            //Button5.Visible = false;
+            //如果省略這句，下面GV的更新操作將無法完成，因为獲得的值是不變的
+            if (!IsPostBack)  
+            {
+                GridView1.DataBind();
+                //GridView1.Attributes.Add("GridView1_RowDeleting", "JavaScript:return confirm('确定删除？')");
+            }
+
             Button8.Visible = false;
 
             if (Session["id"] != null)
                 Label2.Text = (string)Session["id"];
             else
                 Response.Redirect("WebForm1.aspx", true);
-
         }
+
 
         protected void Button1_Click(object sender, EventArgs e)
         {
@@ -39,7 +45,7 @@ namespace WebApplication1
             }
             else
             {
-                SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\TPE-Intern001\Desktop\WebApplication1\WebApplication1\App_Data\Database1.mdf;Integrated Security=True");
+                SqlConnection conn = new SqlConnection(Strcon);
                 conn.Open();    //開啟資料庫連線
                                 //建立SqlCommand查詢命令
                 SqlCommand cmd = new SqlCommand(@"Insert Into [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People](name,tellphone,address) Values(@n,@tell,@addr)", conn);
@@ -63,21 +69,23 @@ namespace WebApplication1
                 Button5.Visible = true;
                 Button8.Visible = true;
             }
-            
         }
 
         protected void Button3_Click(object sender, EventArgs e) //刪除
         {
-            SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\TPE-Intern001\Desktop\WebApplication1\WebApplication1\App_Data\Database1.mdf;Integrated Security=True");
+            SqlConnection conn = new SqlConnection(Strcon);
             conn.Open();
 
             SqlCommand cmd1 = new SqlCommand(@"Select * From [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People] Where name=@a", conn);
             //於SqlCommand中加入SqlParameter參數，並設定參數值
             cmd1.Parameters.Add("@a", SqlDbType.NVarChar, 10).Value = TextBox4.Text;
             SqlDataReader dr1 = cmd1.ExecuteReader();
-            
+
             if (dr1.HasRows)
             {
+                //跳出提示視窗
+                Response.Write("<script language='javascript'>if(confirm('確定删除?'))</script>");
+
                 dr1.Dispose();
                 cmd1.Dispose();
                 SqlCommand cmd = new SqlCommand(@"Delete From [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People] Where  name=@a", conn);
@@ -145,7 +153,6 @@ namespace WebApplication1
                 //建立內容列 DataRow
                 for (int i = 0; i < gv.Rows.Count; i++)
                 {
-
                     XSSFRow rowItem = (XSSFRow)mySheet1.CreateRow(i + 1);
 
                     for (int j = 0; j < gv.HeaderRow.Cells.Count; j++)
@@ -229,7 +236,7 @@ namespace WebApplication1
                 HttpContext.Current.Response.End();*/
 
                 //方法二
-                using (FileStream fs = new FileStream(@"C:\Users\TPE-Intern001\Desktop\20210203.xls", FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))//写入指定的文件
+                using (FileStream fs = new FileStream(@"C:\Users\TPE-Intern001\Desktop\20210205.xls", FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))//写入指定的文件
                 {
                     byte[] b = ms.ToArray();
                     fs.Write(b, 0, b.Length);
@@ -254,7 +261,6 @@ namespace WebApplication1
 
         protected void Button7_Click(object sender, EventArgs e) //匯入
         {
-
             //string savePath = @"C:\Users\TPE-Intern001\Desktop\20210202.xls";
             //將使用者上傳的檔案
             if (FileUpload1.HasFile)
@@ -321,28 +327,23 @@ namespace WebApplication1
             }
         }
 
-        protected void Button1_Click1(object sender, EventArgs e)
-        {
-            
-        }
-        
-        protected void GridView1_SelectedIndexChanged(object sender, EventArgs e) //GV選取
+        protected void GridView1_SelectedIndexChanged(object sender, EventArgs e) //GV-1選取
         {
             Button2.Visible = false;
             Label6.Text = "";
             Button5.Visible = true;
             Button8.Visible = true;
 
-            select_id = Int32.Parse(GridView1.SelectedRow.Cells[0].Text); 
+            select_id = GridView1.SelectedRow.Cells[0].Text; 
             //Response.Write(id);
-            TextBox1.Text = GridView1.SelectedRow.Cells[1].Text;
-            TextBox2.Text = GridView1.SelectedRow.Cells[2].Text;
-            TextBox3.Text = GridView1.SelectedRow.Cells[3].Text;
+            TextBox1.Text = GridView1.SelectedRow.Cells[2].Text;
+            TextBox2.Text = GridView1.SelectedRow.Cells[3].Text;
+            TextBox3.Text = GridView1.SelectedRow.Cells[4].Text;
         }
 
-        protected void Button8_Click(object sender, EventArgs e) //GV修改
+        protected void Button8_Click(object sender, EventArgs e) //GV-2選取後的修改
         {
-            SqlConnection conn1 = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\TPE-Intern001\Desktop\WebApplication1\WebApplication1\App_Data\Database1.mdf;Integrated Security=True");
+            SqlConnection conn1 = new SqlConnection(Strcon);
             //建立Select帶參數語法
             conn1.Open();
             SqlCommand cmd1 = new SqlCommand(@"Update [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People] Set name=@na,tellphone=@tell,address=@addr  Where name=@na", conn1);
@@ -357,13 +358,61 @@ namespace WebApplication1
             conn1.Close();
             conn1.Dispose();
 
-            select_id = 0;
+            select_id = "";
             Button2.Visible = true;
             Button5.Visible = true;
             Button8.Visible = true;
             TextBox1.Text = "";
             TextBox2.Text = "";
             TextBox3.Text = "";
+        }
+
+        protected void GridView1_RowDeleting(object sender, GridViewDeleteEventArgs e) //GridView刪除
+        {
+            //跳出提示視窗
+            //Response.Write("<script language='javascript'>if(confirm('確定删除?'))</script>");
+
+            SqlConnection con = new SqlConnection(Strcon);
+            int id = Convert.ToInt32(GridView1.DataKeys[e.RowIndex].Value);//獲取主鍵，需要設置 DataKeyNames，這裏設为 id
+            String sql = @"delete from [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People] where DId='" + id + "'";
+            SqlCommand com = new SqlCommand(sql, con);
+            con.Open();
+            com.ExecuteNonQuery();
+            con.Close();
+            GridView1.DataBind();
+        }
+
+        protected void GridView1_RowEditing(object sender, GridViewEditEventArgs e) //GridView編輯
+        {
+            GridView1.EditIndex = e.NewEditIndex;//利用e.NewEditIndex獲取當前編輯行索引
+            GridView1.DataBind();//再次绑定顯示編輯行的原數據,不進行绑定要點2次編輯才能跳到編輯狀態
+        }
+
+        protected void GridView1_RowUpdating(object sender, GridViewUpdateEventArgs e) //GridView更新
+        {
+            SqlConnection con = new SqlConnection(Strcon);
+            //獲取要更新的數據
+            String name = (GridView1.Rows[e.RowIndex].Cells[1].Controls[0] as TextBox).Text.ToString();    
+            String phone = (GridView1.Rows[e.RowIndex].Cells[2].Controls[0] as TextBox).Text.ToString();
+            String adr = (GridView1.Rows[e.RowIndex].Cells[3].Controls[0] as TextBox).Text.ToString();
+
+            //獲取主鍵，需要設置 DataKeyNames，這裏設为 id
+            int id = Convert.ToInt32(GridView1.DataKeys[e.RowIndex].Value);
+
+            String sql = @"update [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People] set name='" + name + "',tellphone='" + phone + "',address='" + adr + "' where DId='" + id + "'";
+            SqlCommand com = new SqlCommand(sql, con);
+            con.Open();
+            com.ExecuteNonQuery();
+            con.Close();
+            GridView1.EditIndex = -1;
+            GridView1.DataBind();
+        }
+
+        protected void GridView1_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e) //GridView取消編輯
+        {
+            //編輯索引賦值为-1，變回正常顯示狀態
+            GridView1.EditIndex = -1;
+            GridView1.DataBind();
         }
     }
 }

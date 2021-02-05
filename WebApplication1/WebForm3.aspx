@@ -13,7 +13,7 @@
         <div style="text-align: center">
             <table style="border:3px #808080 solid" cellpadding="10" border="0" align="center">
             <tbody>
-            <tr><td class="auto-style2">輸入要修改之姓名:</td>
+            <tr><td class="auto-style2">先輸入要修改之姓名:</td>
                 <td class="auto-style2"><asp:TextBox ID="TextBox1" runat="server"></asp:TextBox></td></tr>
             </tbody>
             </table>

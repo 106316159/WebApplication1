@@ -19,7 +19,6 @@ namespace WebApplication1
             if (!IsPostBack)  
             {
                 GridView1.DataBind();
-                //GridView1.Attributes.Add("GridView1_RowDeleting", "JavaScript:return confirm('确定删除？')");
             }
 
             Button8.Visible = false;
@@ -29,7 +28,6 @@ namespace WebApplication1
             else
                 Response.Redirect("WebForm1.aspx", true);
         }
-
 
         protected void Button1_Click(object sender, EventArgs e)
         {
@@ -47,12 +45,11 @@ namespace WebApplication1
             {
                 SqlConnection conn = new SqlConnection(Strcon);
                 conn.Open();    //開啟資料庫連線
-                                //建立SqlCommand查詢命令
+                //建立SqlCommand查詢命令
                 SqlCommand cmd = new SqlCommand(@"Insert Into [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People](name,tellphone,address) Values(@n,@tell,@addr)", conn);
-                //cmd.Parameters.Add("@id", SqlDbType.NChar, 10).Value = Label2.Text;
                 cmd.Parameters.Add("@n", SqlDbType.NChar, 10).Value = TextBox1.Text;
-                cmd.Parameters.Add("@tell", SqlDbType.Int, 4).Value = Int32.Parse(TextBox2.Text);
-                cmd.Parameters.Add("@addr", SqlDbType.NVarChar, 50).Value = TextBox3.Text;
+                cmd.Parameters.Add("@tell", SqlDbType.NChar, 10).Value = Int32.Parse(TextBox2.Text);
+                cmd.Parameters.Add("@addr", SqlDbType.NChar, 10).Value = TextBox3.Text;
                 cmd.ExecuteNonQuery();
                 //釋放物件及連線資源
                 Label6.Text = "新增成功！";
@@ -106,7 +103,7 @@ namespace WebApplication1
             conn.Dispose();
         }
 
-        protected void Button5_Click(object sender, EventArgs e) //修改
+        protected void Button5_Click(object sender, EventArgs e) //跳頁修改
         {
             Label2.Text = (string)Session["id"];
             Response.Redirect("WebForm3.aspx", true);
@@ -116,24 +113,15 @@ namespace WebApplication1
         {
             try
             {
-                //建立 WorkBook 及試算表
+                //建立WorkBook及試算表
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 MemoryStream ms = new MemoryStream();
                 XSSFSheet mySheet1 = (XSSFSheet)workbook.CreateSheet(excelName);
 
-                //mySheet1.DefaultColumnWidth = 15; //預設的字元寬度
-
-                //建立標題列 Header
+                //建立標題列Header
                 XSSFRow rowHeader = (XSSFRow)mySheet1.CreateRow(0);
                 for (int i = 0; i < gv.HeaderRow.Cells.Count; i++)
                 {
-                    ////若有啟用排序，Header會變成 LinkButton
-                    //LinkButton lb = null;
-                    //if (gv.HeaderRow.Cells[i].Controls.Count > 0)
-                    //{
-                    // lb = gv.HeaderRow.Cells[i].Controls[0] as LinkButton;
-                    //}
-                    //string strValue = (lb != null) ? lb.Text : gv.HeaderRow.Cells[i].Text;
                     string strValue = gv.HeaderRow.Cells[i].Text;
                     XSSFCell cell = (XSSFCell)rowHeader.CreateCell(i);
                     cell.SetCellValue(HttpUtility.HtmlDecode(strValue).Trim());
@@ -206,24 +194,13 @@ namespace WebApplication1
                             cell.CellStyle = cellStyle;
                             cell.SetCellValue(value1);
                         }
-                        {                             
-                            //數字格式
+                        {
                             cell.SetCellValue(value1);
-
-                            ////自訂呈現格式
-                            //XSSFCellStyle cellStyle = (XSSFCellStyle)workbook.CreateCellStyle(); // 給cell style
-                            //XSSFDataFormat format = (XSSFDataFormat)workbook.CreateDataFormat();
-                            //cellStyle.DataFormat = format.GetFormat("#,##0;[RED](#,##0)");
-                            //cell.CellStyle = cellStyle;
                         }
                     }
                 }
                 //匯出
                 workbook.Write(ms);
-
-                //此為匯出副檔名xls 以上 XSSF 都要改成 HSSF
-                //HttpContext.Current.Response.AddHeader("Content-Disposition", string.Format("Attachment; Filename=" + HttpUtility.UrlEncode(excelName) + ".xls"));
-                //HttpContext.Current.Response.BinaryWrite(ms.ToArray());
 
                 //此為匯出副檔名xlsx
                 //方法一
@@ -261,14 +238,8 @@ namespace WebApplication1
 
         protected void Button7_Click(object sender, EventArgs e) //匯入
         {
-            //string savePath = @"C:\Users\TPE-Intern001\Desktop\20210202.xls";
-            //將使用者上傳的檔案
             if (FileUpload1.HasFile)
             {
-                //string filename = FileUpload1.FileName;
-                //savePath += filename;
-                //FileUpload1.SaveAs(savePath);
-
                 try
                 {
                     //XSSFWorkbook 活頁簿
@@ -288,7 +259,6 @@ namespace WebApplication1
                         {
                             DataColumn myColumn = new DataColumn(headerRow.GetCell(i).StringCellValue);
                             myDT.Columns.Add(myColumn);
-
                         }
                     }
 
@@ -335,21 +305,22 @@ namespace WebApplication1
             Button8.Visible = true;
 
             select_id = GridView1.SelectedRow.Cells[0].Text; 
-            //Response.Write(id);
-            TextBox1.Text = GridView1.SelectedRow.Cells[2].Text;
-            TextBox2.Text = GridView1.SelectedRow.Cells[3].Text;
-            TextBox3.Text = GridView1.SelectedRow.Cells[4].Text;
+            TextBox1.Text = GridView1.SelectedRow.Cells[1].Text;
+            TextBox2.Text = GridView1.SelectedRow.Cells[2].Text;
+            TextBox3.Text = GridView1.SelectedRow.Cells[3].Text;
         }
 
         protected void Button8_Click(object sender, EventArgs e) //GV-2選取後的修改
         {
             SqlConnection conn1 = new SqlConnection(Strcon);
-            //建立Select帶參數語法
             conn1.Open();
             SqlCommand cmd1 = new SqlCommand(@"Update [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People] Set name=@na,tellphone=@tell,address=@addr  Where name=@na", conn1);
-            cmd1.Parameters.Add("@na", SqlDbType.NChar, 10).Value = TextBox1.Text;
-            cmd1.Parameters.Add("@tell", SqlDbType.Int, 4).Value = TextBox2.Text;
-            cmd1.Parameters.Add("@addr", SqlDbType.NVarChar, 50).Value = TextBox3.Text;
+            if(TextBox1.Text!="")
+                cmd1.Parameters.Add("@na", SqlDbType.NChar, 10).Value = TextBox1.Text;
+            if (TextBox2.Text != "")
+                cmd1.Parameters.Add("@tell", SqlDbType.NChar, 10).Value = TextBox2.Text;
+            if (TextBox3.Text != "")
+                cmd1.Parameters.Add("@addr", SqlDbType.NChar, 10).Value = TextBox3.Text;
             cmd1.ExecuteNonQuery();
             GridView1.DataBind();
             Label6.Text = "修改成功";
@@ -369,9 +340,6 @@ namespace WebApplication1
 
         protected void GridView1_RowDeleting(object sender, GridViewDeleteEventArgs e) //GridView刪除
         {
-            //跳出提示視窗
-            //Response.Write("<script language='javascript'>if(confirm('確定删除?'))</script>");
-
             SqlConnection con = new SqlConnection(Strcon);
             int id = Convert.ToInt32(GridView1.DataKeys[e.RowIndex].Value);//獲取主鍵，需要設置 DataKeyNames，這裏設为 id
             String sql = @"delete from [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People] where DId='" + id + "'";
@@ -396,7 +364,7 @@ namespace WebApplication1
             String phone = (GridView1.Rows[e.RowIndex].Cells[2].Controls[0] as TextBox).Text.ToString();
             String adr = (GridView1.Rows[e.RowIndex].Cells[3].Controls[0] as TextBox).Text.ToString();
 
-            //獲取主鍵，需要設置 DataKeyNames，這裏設为 id
+            //獲取主鍵，需要設置 DataKeyNames，這裏設為id
             int id = Convert.ToInt32(GridView1.DataKeys[e.RowIndex].Value);
 
             String sql = @"update [C:\USERS\TPE-INTERN001\DESKTOP\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\DATABASE1.MDF].[dbo].[People] set name='" + name + "',tellphone='" + phone + "',address='" + adr + "' where DId='" + id + "'";
@@ -404,13 +372,12 @@ namespace WebApplication1
             con.Open();
             com.ExecuteNonQuery();
             con.Close();
-            GridView1.EditIndex = -1;
+            GridView1.EditIndex = -1;// 預設值為 -1，表示沒有任何資料列正在編輯，變回正常顯示狀態。
             GridView1.DataBind();
         }
 
         protected void GridView1_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e) //GridView取消編輯
         {
-            //編輯索引賦值为-1，變回正常顯示狀態
             GridView1.EditIndex = -1;
             GridView1.DataBind();
         }
